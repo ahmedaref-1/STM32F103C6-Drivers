@@ -1,7 +1,4 @@
 <h1 align="center">🚀 Welcome to the STM32F103C6 Microcontroller Playground! 🚀</h1>
-
-<p align="center">
-    <img src=""C:\Users\ahmed\Downloads\download.png"" alt="STM32F103C6" width="300">
 </p>
 
 <h2 align="center">Discover the Magic of STM32F103C6 Microcontrollers</h2>

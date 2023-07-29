@@ -26,7 +26,7 @@
 
 int main(void) {
 
-	/* Write your application here */
+	/* Write your application code here */
 
 	while (1) {
 

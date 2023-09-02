@@ -48,7 +48,9 @@
 /******************************************
  *  APB1 BUS PERIPHERALS BASE ADDRESSES   *
  * ****************************************/
-
+#define USART2_BASE									0x40004400UL
+#define USART3_BASE									0x40004800UL
+#define SPI2_BASE 									0x40003800UL
 /******************************************
  *  APB2 BUS PERIPHERALS BASE ADDRESSES   *
  * ****************************************/
@@ -59,7 +61,8 @@
 #define GPIOE_BASE                                  0x40011800UL
 #define EXTI_BASE                                   0x40010400UL
 #define AFIO_BASE                                   0x40010000UL
-
+#define USART1_BASE									0x40013800UL
+#define SPI1_BASE									0x40013000UL
 
 /*********************************************
  *                                           *
@@ -796,7 +799,7 @@ typedef union{
 	};
 }AFIO_MAPR2_t;
 
-/*********** AFIO Register ***********/
+/*********** AFIO Registers ***********/
 typedef struct{
 	AFIO_EVCR_t 		EVCR;
 	AFIO_MAPR_t 		MAPR;
@@ -806,78 +809,234 @@ typedef struct{
 }AFIO_t;
 
 
+/**********************************************************
+ *     USART PERIPHERAL REGISTERS BASE ADDRESSES          *
+ * ********************************************************/
+/*********** USART Registers' Bits ***********/
+//TRM @ Section 27.6 on page 818
+// Status register (USART_SR)
+typedef union{
+	volatile uint32_t SR;
+	struct{
+		volatile uint32_t PE:1;
+		volatile uint32_t FE:1;
+		volatile uint32_t NE:1;
+		volatile uint32_t ORE:1;
+		volatile uint32_t IDIE:1;
+		volatile uint32_t RXNE:1;
+		volatile uint32_t TC:1;
+		volatile uint32_t TXE:1;
+		volatile uint32_t LBD:1;
+		volatile uint32_t CTS:1;
+		volatile uint32_t Reserved:22;
+	};
+}USART_SR_t;
+
+// Data register (USART_DR)
+typedef union{
+	volatile uint32_t _DR;
+	struct{
+		volatile uint32_t DR:9;
+		volatile uint32_t Reserved:23;
+	};
+}USART_DR_t;
+
+// Baud rate register (USART_BRR)
+typedef union{
+	volatile uint32_t BRR;
+	struct{
+		volatile uint32_t DIV_Fraction:4;
+		volatile uint32_t DIV_Mantissa:12;
+		volatile uint32_t Reserved:16;
+	};
+}USART_BRR_t;
+
+// Control register 1 (USART_CR1)
+typedef union{
+	volatile uint32_t CR1;
+	struct{
+		volatile uint32_t SBK:1;
+		volatile uint32_t RWU:1;
+		volatile uint32_t RE:1;
+		volatile uint32_t TE:1;
+		volatile uint32_t IDLEIE:1;
+		volatile uint32_t RXNEIE:1;
+		volatile uint32_t TCIE:1;
+		volatile uint32_t TXEIE:1;
+		volatile uint32_t PEIE:1;
+		volatile uint32_t PS:1;
+		volatile uint32_t PCE:1;
+		volatile uint32_t WAKE:1;
+		volatile uint32_t M:1;
+		volatile uint32_t UE:1;
+		volatile uint32_t Reserved:18;
+	};
+}USART_CR1_t;
+
+// Control register 2 (USART_CR2)
+typedef union{
+	volatile uint32_t CR2;
+	struct{
+		volatile uint32_t ADD:4;
+		volatile uint32_t Reserved1:1;
+		volatile uint32_t LBDL:1;
+		volatile uint32_t LBDIE:1;
+		volatile uint32_t Reserved2:1;
+		volatile uint32_t LBCL:1;
+		volatile uint32_t CPHA:1;
+		volatile uint32_t CPOL:1;
+		volatile uint32_t CLKEN:1;
+		volatile uint32_t STOP:2;
+		volatile uint32_t LINEN:1;
+		volatile uint32_t Reserved3:17;
+	};
+}USART_CR2_t;
+
+// Control register 3 (USART_CR3)
+typedef union{
+	volatile uint32_t CR3;
+	struct{
+		volatile uint32_t EIE:1;
+		volatile uint32_t IREN:1;
+		volatile uint32_t IRLP:1;
+		volatile uint32_t HDSEL:1;
+		volatile uint32_t NACK:1;
+		volatile uint32_t SCEN:1;
+		volatile uint32_t DMAR:1;
+		volatile uint32_t DMAT:1;
+		volatile uint32_t RTSE:1;
+		volatile uint32_t CTSE:1;
+		volatile uint32_t CTSIE:1;
+		volatile uint32_t Reserved:21;
+	};
+}USART_CR3_t;
+
+// Guard time and pre-scaler register (USART_GTPR)
+typedef union{
+	volatile uint32_t GTPR;
+	struct{
+		volatile uint32_t PSC:8;
+		volatile uint32_t GT:8;
+		volatile uint32_t Reserved:16;
+	};
+}USART_GTPR_t;
+
+/*********** USART Registers ***********/
+typedef struct{
+	volatile USART_SR_t SR;
+	volatile USART_DR_t DR;
+	volatile USART_BRR_t BRR;
+	volatile USART_CR1_t CR1;
+	volatile USART_CR2_t CR2;
+	volatile USART_CR3_t CR3;
+	volatile USART_GTPR_t GTPR;
+}USART_t;
+
+
+/************************************************
+ *    SPI PERIPHERAL REGISTERS BASE ADDRESSES   *
+ ************************************************/
+/******************************SPI Registers' Bits*****************************/
+// SPI control register 1 (SPI_CR1)
+typedef union{
+	volatile uint32_t CR1;
+	struct{
+		volatile uint32_t CPHA:1;
+		volatile uint32_t CPOL:1;
+		volatile uint32_t MSTR:1;
+		volatile uint32_t BR:3;
+		volatile uint32_t SPE:1;
+		volatile uint32_t LSBFIRST:1;
+		volatile uint32_t SSI:1;
+		volatile uint32_t SSM:1;
+		volatile uint32_t RXONLY:1;
+		volatile uint32_t DFF:1;
+		volatile uint32_t CRCNEXT:1;
+		volatile uint32_t CRCEN:1;
+		volatile uint32_t BIDIOE:1;
+		volatile uint32_t BIDIMODE:1;
+		volatile uint32_t Reserved:16;
+	};
+}SPI_CR1_t;
+
+// SPI control register 2 (SPI_CR2)
+typedef union{
+	volatile uint32_t CR2;
+	struct{
+		volatile uint32_t RXDMAEN:1;
+		volatile uint32_t TXDMAEN:1;
+		volatile uint32_t SSOE:1;
+		volatile uint32_t Reserved1:2;
+		volatile uint32_t ERRIE:1;
+		volatile uint32_t RXNEIE:1;
+		volatile uint32_t TXEIE:1;
+		volatile uint32_t Reserved2:24;
+	};
+}SPI_CR2_t;
+
+// SPI status register (SPI_SR)
+typedef union{
+	volatile uint32_t SR;
+	struct{
+		volatile uint32_t RXNE:1;
+		volatile uint32_t TXE:1;
+		volatile uint32_t CHSIDE:1;
+		volatile uint32_t UDR:1;
+		volatile uint32_t CRCERR:1;
+		volatile uint32_t MODF:1;
+		volatile uint32_t OVR:1;
+		volatile uint32_t BSY:1;
+		volatile uint32_t Reserved:24;
+	};
+}SPI_SR_t;
+
+// SPI data register (SPI_DR)
+typedef union{
+	volatile uint32_t _DR;
+	struct{
+		volatile uint32_t DR:16;
+		volatile uint32_t Reserved:16;
+	};
+}SPI_DR_t;
+
+/********** SPI Registers**********/
+typedef struct{
+	volatile SPI_CR1_t CR1;
+	volatile SPI_CR2_t CR2;
+	volatile SPI_SR_t SR;
+	volatile SPI_DR_t DR;
+	volatile uint32_t SPI_CRCPR;
+	volatile uint32_t SPI_RXCRCR;
+	volatile uint32_t SPI_TXCRCR;
+	volatile uint32_t SPI_I2SCFGR;
+	volatile uint32_t SPI_I2SPR;
+}SPI_t;
+
+
 /*********************************************
  *                                           *
  *          PERIPHERALS INSTANCES            *
  *                                           *
  *********************************************/
-
+/****************General Purpose Input Output Peripheral (GPIO)****************/
 #define GPIOA                              ((GPIO_t *)GPIOA_BASE)
 #define GPIOB                              ((GPIO_t *)GPIOB_BASE)
 #define GPIOC                              ((GPIO_t *)GPIOC_BASE)
 #define GPIOD                              ((GPIO_t *)GPIOD_BASE)
 #define GPIOE                              ((GPIO_t *)GPIOE_BASE)
-#define RCC                                ((volatile RCC_t  *)RCC_BASE)
-#define AFIO                               ((volatile AFIO_t *)AFIO_BASE)
-#define EXTI                               ((volatile EXTI_t *)EXTI_BASE)
-
-
-/*********************************************
- *                                           *
- *         CLOCK ENABLING MACROS             *
- *                                           *
- *********************************************/
-
-#define RCC_GPIOA_CLOCK_EN()             (RCC->APB2ENR.IOPAEN=HIGH)
-#define RCC_GPIOB_CLOCK_EN()             (RCC->APB2ENR.IOPBEN=HIGH)
-#define RCC_GPIOC_CLOCK_EN()             (RCC->APB2ENR.IOPCEN=HIGH)
-#define RCC_GPIOD_CLOCK_EN()             (RCC->APB2ENR.IOPDEN=HIGH)
-#define RCC_GPIOE_CLOCK_EN()             (RCC->APB2ENR.IOPEEN=HIGH)
-#define RCC_AFIO_CLOCK_EN()              (RCC->APB2ENR.AFIOEN=HIGH)
-
-
-/*********************************************
- *                                           *
- *        EXTERNAL INTERRUPT MACROS          *
- *                                           *
- *********************************************/
-// EXTI Line Number Macros
-#define EXTI0                 (uint16_t)0
-#define EXTI1                 (uint16_t)1
-#define EXTI2                 (uint16_t)2
-#define EXTI3                 (uint16_t)3
-#define EXTI4                 (uint16_t)4
-#define EXTI5                 (uint16_t)5
-#define EXTI6                 (uint16_t)6
-#define EXTI7                 (uint16_t)7
-#define EXTI8                 (uint16_t)8
-#define EXTI9                 (uint16_t)9
-#define EXTI10                (uint16_t)10
-#define EXTI11                (uint16_t)11
-#define EXTI12                (uint16_t)12
-#define EXTI13                (uint16_t)13
-#define EXTI14                (uint16_t)14
-#define EXTI15                (uint16_t)15
-
-// EXTI Request Position Macros
-#define EXTI0_IRQ             6
-#define EXTI1_IRQ             7
-#define EXTI2_IRQ             8
-#define EXTI3_IRQ             9
-#define EXTI4_IRQ             10
-#define EXTI5_IRQ             23
-#define EXTI6_IRQ             23
-#define EXTI7_IRQ             23
-#define EXTI8_IRQ             23
-#define EXTI9_IRQ             23
-#define EXTI9_5_IRQ           23
-#define EXTI10_IRQ            40
-#define EXTI11_IRQ            40
-#define EXTI12_IRQ            40
-#define EXTI13_IRQ            40
-#define EXTI14_IRQ            40
-#define EXTI15_IRQ            40
-#define EXTI15_10_IRQ         40
+/************************Reset and Control Clock (RCC)*************************/
+#define RCC                                ((RCC_t  *)RCC_BASE)
+/*******************Alternative Functions Input Output (AFIO)******************/
+#define AFIO                               ((AFIO_t *)AFIO_BASE)
+/***************************External Interrupt (EXTI)**************************/
+#define EXTI                               ((EXTI_t *)EXTI_BASE)
+/*******Universal Synchronous Asynchronous Receiver Transmitter (USART)********/
+#define USART1                             ((USART_t*)USART1_BASE)
+#define USART2							   ((USART_t*)USART2_BASE)
+#define USART3                             ((USART_t*)USART3_BASE)
+/**********************Serial peripheral interface (SPI)***********************/
+#define SPI1                               ((SPI_t *)SPI1_BASE)
+#define SPI2                               ((SPI_t *)SPI2_BASE)
 
 
 /**********************************************
